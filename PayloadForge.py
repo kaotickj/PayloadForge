@@ -60,7 +60,7 @@ def generate_payload():
         decoded_command = f"echo {encoded_payload} | base64 -d | bash"
     elif encoding_choice == "URL Encoding":
         encoded_payload = urllib.parse.quote_plus(payload)
-        decoded_command = f"echo {encoded_payload} | sed 's/+/ /g;s/%/\\\\x/g' | xargs -0 printf | sh"
+        decoded_command = f"echo {encoded_payload} | sed 's/+/ /g;s/%/\\\\x/g' | xargs -0 printf | bash"
 
     # Display generated payload, encoded payload, and command in the GUI
     output_text.delete(1.0, tk.END)
