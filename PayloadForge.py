@@ -2,6 +2,32 @@ import tkinter as tk
 import base64
 import urllib.parse
 
+
+class Tooltip:
+    def __init__(self, widget, text):
+        self.widget = widget
+        self.text = text
+        self.tooltip = None
+        self.widget.bind("<Enter>", self.on_enter)
+        self.widget.bind("<Leave>", self.on_leave)
+
+    def on_enter(self, event):
+        x, y, _, _ = self.widget.bbox("insert")
+        x += self.widget.winfo_rootx() + 25
+        y += self.widget.winfo_rooty() + 25
+
+        self.tooltip = tk.Toplevel(self.widget)
+        self.tooltip.wm_overrideredirect(True)
+        self.tooltip.wm_geometry(f"+{x}+{y}")
+
+        label = tk.Label(self.tooltip, text=self.text, background="yellow", relief="solid", borderwidth=1)
+        label.pack()
+
+    def on_leave(self, event):
+        if self.tooltip:
+            self.tooltip.destroy()
+            self.tooltip = None
+
 def generate_payload():
     # Get user inputs
     shell_choice = shell_var.get()
@@ -46,8 +72,12 @@ def generate_payload():
 root = tk.Tk()
 root.title("Payload Forge")
 root.geometry("590x450")
+# Set the system icon
+#app.iconphoto(True, tk.PhotoImage(file="icon.png"))
+root.iconbitmap("icon.ico")
 
-# Shell choices
+
+# Add tooltips for shell choices
 shell_var = tk.StringVar()
 shell_var.set("Netcat")
 shell_label = tk.Label(root, text="Select Shell:")
@@ -56,12 +86,14 @@ shell_choices = ["Netcat", "Python", "Bash", "Perl", "Ruby"]
 for i, choice in enumerate(shell_choices):
     rb = tk.Radiobutton(root, text=choice, variable=shell_var, value=choice)
     rb.place(x=120 + 75 * i, y=10)
+    Tooltip(rb, f"Select {choice} shell")
 
 # Netcat version fix option for mismatched versions
 netcat_var = tk.BooleanVar()
 netcat_var.set(False)  # Default to not fixing Netcat versions
 netcat_checkbox = tk.Checkbutton(root, text="Fix Netcat Version Mismatch", variable=netcat_var)
 netcat_checkbox.place(x=120, y=45)
+Tooltip(netcat_checkbox, "Enable to fix Netcat version mismatch")
 
 # Encoding choices
 encoding_var = tk.StringVar()
@@ -72,6 +104,7 @@ encoding_choices = ["Base64", "URL Encoding", "None"]
 for i, choice in enumerate(encoding_choices):
     rb = tk.Radiobutton(root, text=choice, variable=encoding_var, value=choice)
     rb.place(x=120 + 100 * i, y=10 + 20 * (len(shell_choices) + 0))
+    Tooltip(rb, f"Select {choice} encoding method")
 
 # IP and Port entries
 ip_label = tk.Label(root, text="Enter IP:")
@@ -90,5 +123,11 @@ generate_button.place(x=230, y=10 + 25 * (len(shell_choices) + 3))
 # Output text area
 output_text = tk.Text(root, height=10, width=70)
 output_text.place(x=10, y=10 + 25 * (len(shell_choices) + 5))
+Tooltip(shell_label, "Select the type of shell to use for the payload")
+Tooltip(encoding_label, "Select the encoding method for the payload")
+Tooltip(ip_label, "Enter the IP address of the target")
+Tooltip(port_label, "Enter the port number of the target")
+Tooltip(ip_entry, "Enter the IP address of the target")
+Tooltip(port_entry, "Enter the port number of the target")
 
 root.mainloop()
